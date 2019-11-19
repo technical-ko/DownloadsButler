@@ -25,15 +25,11 @@ UML:
 
     private File downloadsDirectory;
 
-    //Idea for handling of directories:
-    private List<List<String>> directoryList;
+    
 
     public DLButler(File downloadsDirectory)
     {
         this.downloadsDirectory = downloadsDirectory;
-
-        //idea for handling of directories:
-        this.directoryList = new ArrayList<>();//initialized in getCleaningDownloadsTask method
     }
 
 
@@ -99,12 +95,29 @@ UML:
     private void moveToDirectory(File fileToMove, String fileExtension, int month, int year)
     {
         //create path to correct month directory and fileExt. subdirectory
+        //Currently this method checks for the directory and subdirectory separately, making each if they don't exist.
+        //This should be changed if possible
 
+        String PATH = this.downloadsDirectory.getPath();
+        PATH = PATH + "\\" + getMonthAsString(month) + year;
+        File dir = new File(PATH);
 
+        //if appropriate date directory doesn't exist
+        if(!dir.exists()){dir.mkdirs();}
 
+        PATH = dir.getPath() + "\\" + fileExtension;
+        dir = new File(PATH);
 
+        //if appropriate fileExt. directory doesn't exist
+        if(!dir.exists()){dir.mkdirs();}
 
+        Path newDir = Paths.get(dir.getPath());
+
+        try {Files.move(Paths.get(fileToMove.getPath()), newDir.resolve(fileToMove.getName()));}
+         catch (Exception e) {//TODO: handle exception
+        }
     }
+//     Files.move(source, newdir.resolve(source.getFileName()), REPLACE_EXISTING);
 
 
 
@@ -134,24 +147,8 @@ UML:
             count++;
 
             List<File> fileList = Arrays.asList(downloadsDirectory.listFiles());
-            List<File> directoryList = new ArrayList<File>();
             ListIterator<File> files;
             File currentFile;
-            
-            /*Figure out how to manage moving files.
-            files = fileList.listIterator();
-            
-            //update list of directories
-            while(files.hasNext())
-            {
-                currentFile = files.next();
-                if(currentFile.isDirectory())
-                {
-                    this.directoryList.add(currentFile);
-                    
-                }
-            }
-            */
 
             //reset iterator
             files = fileList.listIterator();
