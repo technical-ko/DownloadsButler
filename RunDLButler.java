@@ -40,6 +40,7 @@ UML:
 
         timer.scheduleAtFixedRate(task, 300, 2*1000);
 
+        /*
         try {
             Thread.sleep(12000);
         } catch (InterruptedException e) {
@@ -52,7 +53,7 @@ UML:
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        */
 
         
     }//end main

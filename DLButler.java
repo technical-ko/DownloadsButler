@@ -97,6 +97,9 @@ UML:
         //create path to correct month directory and fileExt. subdirectory
         //Currently this method checks for the directory and subdirectory separately, making each if they don't exist.
         //This should be changed if possible
+        //RESEARCH PATH(S), FILES, ETC. to clean this up
+
+
 
         String PATH = this.downloadsDirectory.getPath();
         PATH = PATH + "\\" + getMonthAsString(month) + year;
@@ -117,7 +120,6 @@ UML:
          catch (Exception e) {//TODO: handle exception
         }
     }
-//     Files.move(source, newdir.resolve(source.getFileName()), REPLACE_EXISTING);
 
 
 
@@ -149,6 +151,8 @@ UML:
             List<File> fileList = Arrays.asList(downloadsDirectory.listFiles());
             ListIterator<File> files;
             File currentFile;
+            Calendar calendar = Calendar.getInstance();
+
 
             //reset iterator
             files = fileList.listIterator();
@@ -160,7 +164,13 @@ UML:
                 //do not process directories, only normal files
                 if(currentFile.isFile())
                 {
-                    currentFile = processFile(currentFile);
+                    //if the file hasn't been updated in the last 3 seconds, process it. otherwise, skip it.
+                    //this is to ensure that a file has finished downloading before it is moved
+                    if(calendar.getTimeInMillis() - currentFile.lastModified() > 3000)
+                    {
+                        currentFile = processFile(currentFile);
+                    }
+
                 }
             }//while
 
