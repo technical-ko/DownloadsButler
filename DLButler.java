@@ -1,4 +1,6 @@
 import java.util.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,7 +10,7 @@ public class DLButler
 {
 
 /*
-Last Updated: 11/16/2019
+Last Updated: 11/21/2019
 Author: Keith O'Neal
 Class Description: 
 DLButler
@@ -25,14 +27,13 @@ UML:
 
     private File downloadsDirectory;
 
-    
 
     public DLButler(File downloadsDirectory)
     {
+        if(!downloadsDirectory.exists()){throw new IllegalArgumentException(getClass().getName() + "downloads directory does not exist");}
+
         this.downloadsDirectory = downloadsDirectory;
     }
-
-
 
 
     //renames fileToName according to the current date
@@ -76,11 +77,12 @@ UML:
             //rename the file to newName
             //NOTE: if there exists a file in directory with the same name as newName,
             //then it will be overwritten.
-            //figure out how to handle SecurityExceptions and NullPointerExceptions
             Path source = Paths.get(fileToProcess.getPath());
             
             try {Files.move(source, source.resolveSibling(newName));}
-            catch (Exception e) {//TODO: handle exception
+            catch (IOException e) {
+                JFrame frame = new JFrame("ErrorMsg");
+                JOptionPane.showMessageDialog(frame, "There was an error renaming " + fileToProcess.getName() + ".", "DLButler Error", JOptionPane.WARNING_MESSAGE);
             }
             
         }
@@ -100,7 +102,6 @@ UML:
         //RESEARCH PATH(S), FILES, ETC. to clean this up
 
 
-
         String PATH = this.downloadsDirectory.getPath();
         PATH = PATH + "\\" + getMonthAsString(month) + year;
         File dir = new File(PATH);
@@ -117,13 +118,16 @@ UML:
         Path newDir = Paths.get(dir.getPath());
 
         try {Files.move(Paths.get(fileToMove.getPath()), newDir.resolve(fileToMove.getName()));}
-         catch (Exception e) {//TODO: handle exception
+         catch (IOException e)
+          {
+            /*
+            this error gets repeatedly thrown when the program is run. As far as I am aware, these I/O exceptions aren't doing anything harmful (no corrupted files in my testing so far).
+            I think they indicate that my implementation of threading in this program is pretty inefficient.
+            */
+          // JFrame frame = new JFrame("ErrorMsg");
+          //  JOptionPane.showMessageDialog(frame, "There was an error moving " + fileToMove.getName() + " to its proper folder.", "DLButler Error", JOptionPane.WARNING_MESSAGE);
         }
     }
-
-
-
-  
 
 
 
@@ -173,8 +177,6 @@ UML:
 
                 }
             }//while
-
-
 
         }
 

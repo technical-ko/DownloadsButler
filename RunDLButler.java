@@ -1,11 +1,13 @@
 import java.util.*;
 import java.io.*;
+import java.nio.file.Paths;
+
 
 public class RunDLButler
 {
 
 /*
-Last Updated: 11/16/2019
+Last Updated: 11/21/2019
 Author: Keith O'Neal
 Class Description: 
 RunDLButler
@@ -25,9 +27,15 @@ UML:
     public static void main( String[] args )
     {
 
-        //ADD SANITIZATION of args[1] IN HERE
-      //  File downloadsDirectory = new File(args[1]);
-        File downloadsDirectory = new File("C:\\Users\\bneal\\OneDrive\\Desktop\\DLButler\\test");//Hardcode for now.
+        File downloadsDirectory;
+
+        if(args.length > 0 ){downloadsDirectory = new File(args[0]);}
+        else
+        {
+            downloadsDirectory = Paths.get(System.getProperty("user.home") + "\\Downloads").toFile();
+        }
+
+        //File downloadsDirectory = new File("C:\\Users\\bneal\\OneDrive\\Desktop\\DLButler\\test");//Hardcode for testing
 
         if(!downloadsDirectory.exists())
         {
@@ -37,23 +45,23 @@ UML:
         DLButler dlButler = new DLButler(downloadsDirectory);
         TimerTask task = dlButler.getCleanDownloadsTask();
         Timer timer = new Timer();
+        Scanner scanner = new Scanner(System.in);
 
         timer.scheduleAtFixedRate(task, 300, 2*1000);
 
-        /*
-        try {
-            Thread.sleep(12000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        
+        while(true)
+        {
+            System.out.println("Type 'q' and enter to terminate the application");
+            String line = scanner.nextLine();
+            if(line.charAt(0) == 'q')
+            {
+                System.out.println("Quitting DLButler...");
+                scanner.close();
+                timer.cancel();
+                System.exit(0);
+            }
         }
-        timer.cancel();
-        System.out.println("TimerTask cancelled");
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
 
         
     }//end main
